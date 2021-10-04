@@ -1,0 +1,45 @@
+param warehouseCapacity:= 140000;
+param totalMachineTime:= 1451520;
+param budget:=10000000;
+
+set Years:=1997,1998,1999,2000,2001,2002,2003;
+
+table Product_Master IN "ODBC" "S:\ECFPC\WARP2011W.mdb": 
+	Shoes <- [Product_Num], price ~ Sales_Price;
+read table Product_Master;
+
+table MachineTab IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "Machine_Master":
+	Machines <- [Machine_Num], operatingCost ~ OpCost_per_min; 
+read table MachineTab;
+
+table rawTab IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "RM_Master":
+	Materials <- [RM_Num], materialCost ~ Cost, materialCapacity ~ S_Quantity;
+read table rawTab;
+
+for {i in Shoes, j in Machines}{
+	let machineTime[i,j]:=0;
+}
+
+table machineTab IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "Machine_Assign":
+	[Product_Num, Machine_Num], machineTime ~ Avg_Duration;
+read table machineTab;
+
+table storeTab IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "Store_Master":
+	Stores <- [Store_Num];
+read table storeTab;
+
+for{i in Shoes, k in Materials}{
+	let material[i,k]:=0;
+}
+
+table materialTab IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "BOM":
+	[Product_Num, RM_Num], material ~ Quantity;
+read table materialTab;
+
+table prodDemand IN "ODBC" "S:\ECFPC\WARP2011W.mdb" "SQL=SELECT * FROM Product_Demand WHERE Month = 2":
+	[Product_Num, Year, Store_Num], demand ~ Demand;
+read table prodDemand;
+
+for{i in Shoes}{
+	let averageDemand[i]:= sum{y in Years, s in Stores} demand[i,y,s]/10;
+}

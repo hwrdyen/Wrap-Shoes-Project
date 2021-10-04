@@ -1,0 +1,55 @@
+reset;
+
+model '\\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.mod';
+data '\\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.dat';
+
+option solver 'C:\Program Files (x86)\AMPL32\gurobi.exe';
+
+solve;
+
+###########################################
+printf 'a) Please see attached mod, dat, run, and out files.\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+###########################################
+printf 'b) Optimal revenue: %.3lf\n', revenue >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+###########################################
+printf 'c) Optimal x values:\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+	for{i in Shoes}{
+		if (x[i] > 0) then
+			printf '\tx[%s] = %.21f\n', i, x[i] >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+		
+	}
+###########################################
+printf 'd) Binding constraints:\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+if wareCapacity.slack <= 1E-4 then
+	printf '\twareCapacity\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+
+if timeCapacity.slack <= 1E-4 then
+	printf '\ttimeCapacity\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+
+if budegtCapacity.slack <= 1E-4 then
+	printf '\tbudgetCapacity\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+
+for{k in Materials}{
+	if matCapacity[k].slack <= 1E-4 then
+		printf '\tmatCapacity[%s]\n',k >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+}
+###########################################
+printf 'e) Reduced costs:\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+	for{i in Shoes}
+		printf '\tx[%s] = %.2lf\n', i, x[i].rc >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+###########################################
+printf 'f) Shadow prices:\n' >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+	printf '\twareCapacity = %.3lf\n', wareCapacity.dual >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+
+	printf '\ttimeCapacity = %.3lf\n', timeCapacity.dual >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+	
+	for{k in Materials}{
+		printf '\tmatCapacity[%s] = %.3lf\n', k, matCapacity[k].dual >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+}
+
+	printf '\tbudgetCapacity = %.3lf\n', budgetCapacity.dual >> \\SRVD\Homes$\leeseeun\Documents\Warp_Shoes\yenkaixi_ohkeun_leeseeun.out;
+	
+	
+
+
+
